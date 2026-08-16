@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: "Inter", Arial, sans-serif;
+            background: linear-gradient(135deg, #eef2f3, #d9e2ec);
+            padding-bottom: 40px;
+        }
+
+        .page-header {
+            background: #1e3a8a;
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            font-size: 36px;
+            font-weight: 700;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        }
+
+        #calendar-wrapper {
+            max-width: 1100px;
+            margin: 40px auto;
+            background: white;
+            padding: 35px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+        }
+
+        .event-seminar {
+            background: #2ecc71 !important;
+        }
+
+        .event-curs {
+            background: #4a6cf7 !important;
+        }
+
+        .event-tutoriat {
+            background: #f39c12 !important;
+        }
+
+        .event-exam {
+            background: #e74c3c !important;
+            font-weight: bold !important;
+        }
+
+        .fc-event {
+            border: none !important;
+            color: white !important;
+            border-radius: 6px;
+            padding: 3px 6px;
+        }
+
+        .fc-event-title {
+            font-weight: 600;
+        }
+    </style>
+
+  <title>Calendar Academic | Analiza Matematică</title>
+  <meta name="description" content="Calendarul oficial al activităților, cursurilor, seminarelor și examenelor pentru Analiza Matematică." />
+  <link rel="canonical" href="https://analizamatematica.site/calendar.html" />
+  <meta property="og:title" content="Calendar Academic | Analiza Matematică" />
+  <meta property="og:description" content="Calendarul oficial al activităților, cursurilor, seminarelor și examenelor pentru Analiza Matematică." />
+  <meta property="og:url" content="https://analizamatematica.site/calendar.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Analiza Matematică" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Calendar Academic | Analiza Matematică" />
+  <meta name="twitter:description" content="Calendarul oficial al activităților, cursurilor, seminarelor și examenelor pentru Analiza Matematică." />
+
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+</head>
+
+<body>
+
+<div class="page-header">Calendar Analiză Matematică</div>
+
+<div id="calendar-wrapper">
+    <div id="calendar"></div>
+</div>
+
+<footer class="site-footer">
+  <center>
+    <div class="footer-left">
+      © 2026 Analiză Matematică. Toate drepturile rezervate!
+    </div>
+
+    <div class="footer-links">
+      <a href="https://www.unibuc.ro" target="_blank" rel="noopener noreferrer">Universitatea din București</a>
+      <span>•</span>
+      <a href="https://fmi.unibuc.ro" target="_blank" rel="noopener noreferrer">Facultatea de Matematică și Informatică</a>
+    </div>
+
+    <div class="footer-right">
+      Developed by
+      <a href="https://www.devcore-enterprise.site" target="_blank" rel="noopener noreferrer">DevCore Enterprise</a>
+    </div>
+  </center>
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    const profesori = {
+        curs: "Lect. Dr. Alexandru Mihail",
+        "161": "Lect. Dr. Alexandru Mihail",
+        "162": "Asist. Dr. Andrei Halanay",
+        "163": "Asist. Dr. Liliana Mitre",
+        "164": "Asist. Dr. Liliana Mitre",
+        tutoriat: "Tutore Neacșu Andrei Ștefan & Tutore Nițuică Andrei Sebastian"
+    };
+
+    var calendarEl = document.getElementById('calendar');
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        height: 'auto',
+
+        events: [
+
+            { title:'Curs Analiză Matematică',    start:'2025-10-03T14:00', end:'2025-10-03T16:00', type:'curs', sala:'501', regim:'fizic' },
+            { title:'Curs Analiză Matematică',    start:'2025-10-10T14:00', end:'2025-10-10T16:00', type:'curs', sala:'501', regim:'fizic' },
+            { title:'Curs Analiză Matematică',    start:'2025-10-17T14:00', end:'2025-10-17T16:00', type:'curs', sala:'501', regim:'fizic' },
+            { title:'Curs Analiză Matematică',    start:'2025-10-24T14:00', end:'2025-10-24T16:00', type:'curs', sala:'501', regim:'fizic' },
+            { title:'Curs Analiză Matematică',    start:'2025-10-31T14:00', end:'2025-10-31T16:00', type:'curs', sala:'501', regim:'fizic' },
+            { title:'Curs Analiză Matematică',    start:'2025-11-07T14:00', end:'2025-11-07T16:00', type:'curs', sala:'501', regim:'fizic' },
+            { title:'Curs Analiză Matematică',    start:'2025-11-14T14:00', end:'2025-11-14T16:00', type:'curs', sala:'501', regim:'fizic' },
+            { title:'Curs Analiză Matematică',    start:'2025-11-21T14:00', end:'2025-11-21T16:00', type:'curs', sala:'501', regim:'fizic' },
+            { title:'Curs Analiză Matematică',    start:'2025-11-28T14:00', end:'2025-11-28T16:00', type:'curs', sala:'501', regim:'fizic' },
+            { title:'Curs Analiză Matematică',    start:'2025-12-05T14:00', end:'2025-12-05T16:00', type:'curs', sala:'501', regim:'fizic' },
+            { title:'Curs Analiză Matematică',    start:'2025-12-12T14:00', end:'2025-12-12T16:00', type:'curs', sala:'501', regim:'fizic' },
+            { title:'Curs Analiză Matematică',    start:'2025-12-19T14:00', end:'2025-12-19T16:00', type:'curs', sala:'501', regim:'fizic' },
+            { title:'Curs Analiză Matematică',    start:'2026-01-09T14:00', end:'2026-01-09T16:00', type:'curs', sala:'501', regim:'fizic' },
+            { title:'Curs Analiză Matematică',    start:'2026-01-16T14:00', end:'2026-01-16T16:00', type:'curs', sala:'501', regim:'fizic' },
+
+            { title:'Seminar Analiză Matematică', start:'2025-10-03T10:00', end:'2025-10-03T12:00', type:'seminar', grupa:'164', sala:'111', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2025-10-03T12:00', end:'2025-10-03T14:00', type:'seminar', grupa:'163', sala:'107', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2025-10-03T16:00', end:'2025-10-03T18:00', type:'seminar', grupa:'161', sala:'107', regim:'fizic' },
+
+            { title:'Seminar Analiză Matematică', start:'2025-10-07T10:00', end:'2025-10-07T12:00', type:'seminar', grupa:'162', sala:'108', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2025-10-10T10:00', end:'2025-10-10T12:00', type:'seminar', grupa:'164', sala:'111', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2025-10-10T12:00', end:'2025-10-10T14:00', type:'seminar', grupa:'163', sala:'107', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2025-10-10T16:00', end:'2025-10-10T18:00', type:'seminar', grupa:'161', sala:'107', regim:'fizic' },
+
+            { title:'Seminar Analiză Matematică', start:'2025-10-14T10:00', end:'2025-10-14T12:00', type:'seminar', grupa:'162', sala:'108', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2025-10-17T10:00', end:'2025-10-17T12:00', type:'seminar', grupa:'164', sala:'111', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2025-10-17T12:00', end:'2025-10-17T14:00', type:'seminar', grupa:'163', sala:'107', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2025-10-17T16:00', end:'2025-10-17T18:00', type:'seminar', grupa:'161', sala:'107', regim:'fizic' },
+
+            { title:'Seminar Analiză Matematică', start:'2025-10-21T10:00', end:'2025-10-21T12:00', type:'seminar', grupa:'162', sala:'108', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2025-10-24T10:00', end:'2025-10-24T12:00', type:'seminar', grupa:'164', sala:'111', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2025-10-24T12:00', end:'2025-10-24T14:00', type:'seminar', grupa:'163', sala:'107', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2025-10-24T16:00', end:'2025-10-24T18:00', type:'seminar', grupa:'161', sala:'107', regim:'fizic' },
+
+            { title:'Seminar Analiză Matematică', start:'2025-10-28T10:00', end:'2025-10-28T12:00', type:'seminar', grupa:'162', sala:'108', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2025-10-31T10:00', end:'2025-10-31T12:00', type:'seminar', grupa:'164', sala:'111', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2025-10-31T12:00', end:'2025-10-31T14:00', type:'seminar', grupa:'163', sala:'107', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2025-10-31T16:00', end:'2025-10-31T18:00', type:'seminar', grupa:'161', sala:'107', regim:'fizic' },
+
+            { title:'Seminar Analiză Matematică', start:'2025-11-04T10:00', end:'2025-11-04T12:00', type:'seminar', grupa:'162', sala:'108', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2025-11-07T10:00', end:'2025-11-07T12:00', type:'seminar', grupa:'164', sala:'111', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2025-11-07T12:00', end:'2025-11-07T14:00', type:'seminar', grupa:'163', sala:'107', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2025-11-07T16:00', end:'2025-11-07T18:00', type:'seminar', grupa:'161', sala:'107', regim:'fizic' },
+
+            { title:'Seminar Analiză Matematică', start:'2025-11-11T10:00', end:'2025-11-11T12:00', type:'seminar', grupa:'162', sala:'108', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2025-11-14T10:00', end:'2025-11-14T12:00', type:'seminar', grupa:'164', sala:'111', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2025-11-14T12:00', end:'2025-11-14T14:00', type:'seminar', grupa:'163', sala:'107', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2025-11-14T16:00', end:'2025-11-14T18:00', type:'seminar', grupa:'161', sala:'107', regim:'fizic' },
+
+            { title:'Seminar Analiză Matematică', start:'2025-11-18T10:00', end:'2025-11-18T12:00', type:'seminar', grupa:'162', sala:'108', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2025-11-21T10:00', end:'2025-11-21T12:00', type:'seminar', grupa:'164', sala:'111', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2025-11-21T12:00', end:'2025-11-21T14:00', type:'seminar', grupa:'163', sala:'107', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2025-11-21T16:00', end:'2025-11-21T18:00', type:'seminar', grupa:'161', sala:'107', regim:'fizic' },
+
+            { title:'Seminar Analiză Matematică', start:'2025-11-25T10:00', end:'2025-11-25T12:00', type:'seminar', grupa:'162', sala:'108', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2025-11-28T10:00', end:'2025-11-28T12:00', type:'seminar', grupa:'164', sala:'111', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2025-11-28T12:00', end:'2025-11-28T14:00', type:'seminar', grupa:'163', sala:'107', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2025-11-28T16:00', end:'2025-11-28T18:00', type:'seminar', grupa:'161', sala:'107', regim:'fizic' },
+
+            { title:'Seminar Analiză Matematică', start:'2025-12-02T10:00', end:'2025-12-02T12:00', type:'seminar', grupa:'162', sala:'108', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2025-12-05T10:00', end:'2025-12-05T12:00', type:'seminar', grupa:'164', sala:'111', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2025-12-05T12:00', end:'2025-12-05T14:00', type:'seminar', grupa:'163', sala:'107', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2025-12-05T16:00', end:'2025-12-05T18:00', type:'seminar', grupa:'161', sala:'107', regim:'fizic' },
+
+            { title:'Seminar Analiză Matematică', start:'2025-12-09T10:00', end:'2025-12-09T12:00', type:'seminar', grupa:'162', sala:'108', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2025-12-12T10:00', end:'2025-12-12T12:00', type:'seminar', grupa:'164', sala:'111', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2025-12-12T12:00', end:'2025-12-12T14:00', type:'seminar', grupa:'163', sala:'107', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2025-12-12T16:00', end:'2025-12-12T18:00', type:'seminar', grupa:'161', sala:'107', regim:'fizic' },
+
+            { title:'Seminar Analiză Matematică', start:'2025-12-16T10:00', end:'2025-12-16T12:00', type:'seminar', grupa:'162', sala:'108', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2025-12-19T10:00', end:'2025-12-19T12:00', type:'seminar', grupa:'164', sala:'111', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2025-12-19T12:00', end:'2025-12-19T14:00', type:'seminar', grupa:'163', sala:'107', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2025-12-19T16:00', end:'2025-12-19T18:00', type:'seminar', grupa:'161', sala:'107', regim:'fizic' },
+
+            { title:'Seminar Analiză Matematică', start:'2025-12-23T08:00', end:'2025-12-23T10:00', type:'seminar', grupa:'162', regim:'online' },
+
+            { title:'Seminar Analiză Matematică', start:'2026-01-09T10:00', end:'2026-01-09T12:00', type:'seminar', grupa:'164', sala:'111', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2026-01-09T12:00', end:'2026-01-09T14:00', type:'seminar', grupa:'163', sala:'107', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2026-01-09T16:00', end:'2026-01-09T18:00', type:'seminar', grupa:'161', sala:'107', regim:'fizic' },
+
+            { title:'Seminar Analiză Matematică', start:'2026-01-13T10:00', end:'2026-01-13T12:00', type:'seminar', grupa:'162', sala:'108', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2026-01-16T10:00', end:'2026-01-16T12:00', type:'seminar', grupa:'164', sala:'111', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2026-01-16T12:00', end:'2026-01-16T14:00', type:'seminar', grupa:'163', sala:'107', regim:'fizic' },
+            { title:'Seminar Analiză Matematică', start:'2026-01-16T16:00', end:'2026-01-16T18:00', type:'seminar', grupa:'161', sala:'107', regim:'fizic' },
+
+            { title:'Tutoriat Analiză Matematică', start:'2025-10-21T12:00', end:'2025-10-21T14:00', type:'tutoriat', sala:'209', regim:'fizic' },
+            { title:'Tutoriat Analiză Matematică', start:'2025-10-27T18:00', end:'2025-10-27T20:00', type:'tutoriat', sala:'102', regim:'fizic' },
+            { title:'Tutoriat Analiză Matematică', start:'2025-11-04T12:00', end:'2025-11-04T14:00', type:'tutoriat', sala:'209', regim:'fizic' },
+            { title:'Tutoriat Analiză Matematică', start:'2025-11-11T12:00', end:'2025-11-11T14:00', type:'tutoriat', sala:'209', regim:'fizic' },
+            { title:'Tutoriat Analiză Matematică', start:'2025-11-18T12:00', end:'2025-11-18T14:00', type:'tutoriat', sala:'209', regim:'fizic' },
+            { title:'Tutoriat Analiză Matematică', start:'2025-11-25T12:00', end:'2025-11-25T14:00', type:'tutoriat', sala:'209', regim:'fizic' },
+            { title:'Tutoriat Analiză Matematică', start:'2025-12-02T12:00', end:'2025-12-02T14:00', type:'tutoriat', sala:'209', regim:'fizic' },
+            { title:'Tutoriat Analiză Matematică', start:'2025-12-09T12:00', end:'2025-12-09T14:00', type:'tutoriat', sala:'209', regim:'fizic' },
+            { title:'Tutoriat Analiză Matematică', start:'2025-12-16T12:00', end:'2025-12-16T14:00', type:'tutoriat', sala:'209', regim:'fizic' },
+            { title:'Tutoriat Analiză Matematică', start:'2025-12-23T10:00', end:'2025-12-23T14:00', type:'tutoriat', regim:'online' },
+            { title:'Tutoriat Analiză Matematică', start:'2026-01-13T12:00', end:'2026-01-13T14:00', type:'tutoriat', sala:'209', regim:'fizic' },
+            { title:'Tutoriat Analiză Matematică', start:'2026-01-23T16:00', end:'2026-01-23T18:00', type:'tutoriat', regim:'online' },
+            
+            { title:'EXAMEN Analiză Matematică', start:'2026-01-26T10:00', end:'2026-01-26T13:00', type:'exam', sala:'703', regim:'fizic' },
+            { title:'EXAMEN Analiză Matematică', start:'2026-01-27T10:00', end:'2026-01-27T13:00', type:'exam', sala:'703', regim:'fizic' }
+        ],
+
+        eventDidMount: function(info) {
+            if (info.event.extendedProps.type === 'seminar') {
+                info.el.classList.add('event-seminar');
+            } else if (info.event.extendedProps.type === 'curs') {
+                info.el.classList.add('event-curs');
+            } else if (info.event.extendedProps.type === 'tutoriat') {
+                info.el.classList.add('event-tutoriat');
+            } else if (info.event.extendedProps.type === 'exam') {
+                info.el.classList.add('event-exam');
+            }
+        },
+
+        eventClick: function(info) {
+            const p = info.event.extendedProps;
+
+            const profesor = p.type === 'seminar'
+                ? profesori[p.grupa]
+                : p.type === 'curs'
+                ? profesori.curs
+                : p.type === 'exam'
+                ? "Comisie de examen"
+                : profesori.tutoriat;
+
+            const regimInfo = p.regim === 'online' ? 
+                "Regim: online" : 
+                `Regim: fizic${p.sala ? `\nSala: ${p.sala}` : ''}`;
+            
+            let alertTitle = info.event.title;
+            if (p.grupa && p.type === 'seminar') {
+                alertTitle += ` - Grupa ${p.grupa}`;
+            }
+
+            let alertMessage = alertTitle +
+                "\n" + regimInfo +
+                "\nProfesor: " + profesor +
+                "\nOră: " +
+                info.event.start.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) +
+                " - " +
+                info.event.end.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+
+            alert(alertMessage);
+        }
+    });
+
+    calendar.render();
+});
+</script>
+
+</body>
+</html>

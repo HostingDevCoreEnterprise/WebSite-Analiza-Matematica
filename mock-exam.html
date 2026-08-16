@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+body { background: linear-gradient(to right, #eef2ff, #f5f3ff); }
+section { transition: all 0.4s ease; }
+.fade-out { opacity: 0; transform: scale(0.95); pointer-events: none; }
+.timer { font-weight: bold; display: none; }
+.attempt-info { font-weight: 500; color: #4b5563; }
+.pdf-list { max-height: 300px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: 10px; margin-top:10px; }
+.pdf-item { margin-bottom: 6px; }
+.inactive-account { color: #9ca3af; font-style: italic; }
+</style>
+
+  <title>Platformă Mock-Exam | Analiza Matematică</title>
+  <meta name="description" content="Simulări de examene și teste de antrenament pentru Analiză Matematică." />
+  <link rel="canonical" href="https://analizamatematica.site/mock-exam.html" />
+  <meta property="og:title" content="Platformă Mock-Exam | Analiza Matematică" />
+  <meta property="og:description" content="Simulări de examene și teste de antrenament pentru Analiză Matematică." />
+  <meta property="og:url" content="https://analizamatematica.site/mock-exam.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Analiza Matematică" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Platformă Mock-Exam | Analiza Matematică" />
+  <meta name="twitter:description" content="Simulări de examene și teste de antrenament pentru Analiză Matematică." />
+
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+</head>
+<body class="min-h-screen flex flex-col items-center justify-between p-4">
+
+<div id="app" class="w-full max-w-4xl bg-white shadow-2xl rounded-3xl p-8 space-y-6 mt-6">
+
+<h1 class="text-3xl font-bold text-center text-indigo-700 mb-6">Mock Exam Portal</h1>
+
+<div id="login" class="space-y-4">
+<label class="block text-gray-700 font-medium">Username</label>
+<input id="username" class="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-400 outline-none" autocomplete="username">
+<label class="block text-gray-700 font-medium">Password</label>
+<input id="password" type="password" class="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-400 outline-none" autocomplete="current-password">
+<button onclick="login()" class="w-full bg-indigo-600 text-white font-semibold py-3 rounded-xl hover:bg-indigo-700 transition">Login</button>
+<button onclick="requestAccess()" class="w-full bg-gray-200 text-gray-700 font-medium py-2 rounded-xl hover:bg-gray-300 transition">Request Access</button>
+<p id="loginError" class="text-red-600 font-medium"></p>
+</div>
+
+<div id="exam" class="hidden space-y-6">
+
+<div class="flex justify-between items-center">
+<div>
+<h2 id="welcome" class="text-xl font-semibold text-indigo-800"></h2>
+<p id="hint" class="text-sm text-gray-500">Start each section when ready — timer appears after starting.</p>
+</div>
+<div>
+<p id="attemptInfo" class="attempt-info"></p>
+<button onclick="logout()" class="px-4 py-2 bg-red-100 text-red-700 font-medium rounded-xl hover:bg-red-200 transition">Logout</button>
+</div>
+</div>
+
+<div id="adminPDFSection" class="hidden p-4 bg-gray-50 rounded-xl shadow space-y-3">
+<button id="togglePDFListBtn" onclick="toggleAdminPDFList()" class="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300">See PDF List</button>
+<div id="adminPDFList" class="pdf-list hidden"></div>
+</div>
+
+<section id="theorySection" class="p-5 bg-indigo-50 rounded-2xl shadow-md space-y-3">
+<div class="flex justify-between items-center">
+<h3 class="text-lg font-semibold text-indigo-700">Theory Section <span id="theoryTimer" class="ml-2 timer">00:00</span></h3>
+<button id="startTheory" onclick="startTimer('theory')" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">Start Theory</button>
+</div>
+<div id="theoryPdfContainer" class="hidden mt-3">
+<iframe id="theoryPdf" class="w-full h-96 rounded-xl border"></iframe>
+</div>
+</section>
+
+<section id="exSection" class="p-5 bg-purple-50 rounded-2xl shadow-md space-y-3">
+<div class="flex justify-between items-center">
+<h3 class="text-lg font-semibold text-purple-700">Exercises Section <span id="exTimer" class="ml-2 timer">00:00</span></h3>
+<button id="startEx" onclick="startTimer('ex')" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition">Start Exercises</button>
+</div>
+<div id="exPdfContainer" class="hidden mt-3">
+<iframe id="exPdf" class="w-full h-96 rounded-xl border"></iframe>
+</div>
+</section>
+
+<div id="finishExamContainer" class="hidden">
+<button onclick="finishExam()" id="finishExamBtn" class="w-full bg-green-600 text-white font-semibold py-3 rounded-xl hover:bg-green-700 transition">Finish Exam</button>
+</div>
+
+<div id="uploadCard" class="hidden p-6 bg-white border rounded-2xl shadow-sm text-center">
+<p id="uploadName" class="text-gray-700 font-semibold mb-3"></p>
+<button id="openFolderBtn" class="px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition" target="_blank" rel="noopener">Open Upload Folder</button>
+<button onclick="resetPortal()" id="retakeBtn" class="mt-4 px-6 py-3 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition">Retake Exam</button>
+</div>
+
+</div>
+</div>
+
+<footer class="site-footer">
+  <center>
+    <div class="footer-left">
+      © 2026 Analiză Matematică. Toate drepturile rezervate!
+    </div>
+
+    <div class="footer-links">
+      <a href="https://www.unibuc.ro" target="_blank" rel="noopener noreferrer">Universitatea din București</a>
+      <span>•</span>
+      <a href="https://fmi.unibuc.ro" target="_blank" rel="noopener noreferrer">Facultatea de Matematică și Informatică</a>
+    </div>
+
+    <div class="footer-right">
+      Developed by
+      <a href="https://www.devcore-enterprise.site" target="_blank" rel="noopener noreferrer">DevCore Enterprise</a>
+    </div>
+  </center>
+</footer>
+
+<script>
+const USERS = {
+    admin: {password: "admin", name: "Admin", group: null, driveFolder: "", tries: null, active: true},
+    
+    oabalan: {password: "XzeZ2CGy5TDB89hf", name: "Bălan Otniel-Andrei", group: 161, driveFolder: "https://drive.google.com/drive/folders/1CrwloacF_JcLb04_kKlvdwtCVWwDTLJ4", tries: 0, active: false},
+    mechelan: {password: "QDhV!Nu&rZMkm7?9", name: "Chelan Maria-Estera", group: 161, driveFolder: "https://drive.google.com/drive/folders/1wDLkZpD5JHMf0uQG8oEXmK8MWyJalblg", tries: 0, active: false},
+    rachelu: {password: "!gfdZdPa6+%gZ6q7", name: "Chelu Radu-Andrei", group: 161, driveFolder: "https://drive.google.com/drive/folders/12s4qZ8GHPviLM9DyJpZ6UKiH67QSYCsv", tries: 0, active: false},
+    aciuvica: {password: "J-6g$-86TDQD4%Dn", name: "Ciuvică Alexandru", group: 161, driveFolder: "https://drive.google.com/drive/folders/1XHXTZOe0WEnwd3CvFLUtKzry4msDTAIB", tries: 0, active: false},
+    eddragnea: {password: "V9cpngS5%?jbwqx-", name: "Dragnea Edward-Dorian", group: 161, driveFolder: "https://drive.google.com/drive/folders/1bWkDxDr6zICfEyYrQ7ToV8bsUnEzCRAY", tries: 0, active: false},
+    aaflueraru: {password: "W@?ZEAnCGjG-@aN9", name: "Flueraru Alexandru-Achille", group: 161, driveFolder: "https://drive.google.com/drive/folders/1X-n6f4v3A12WrEut8twUbwBsP4aTEkgE", tries: 0, active: false},
+    dgaina: {password: "*b2P#5xrsemvXJ-G", name: "Găină David", group: 161, driveFolder: "https://drive.google.com/drive/folders/1xGqtlMkTi3U3QeGQwskn9CKzBYeWP_q1", tries: 0, active: false},
+    mdneculae: {password: "ZYGSyVKsuS@c@jTX", name: "Neculae Mara-Daniela", group: 161, driveFolder: "https://drive.google.com/drive/folders/1gWBkMAgCGvHl6JO7rj_plOqA2Q7Cb9Xm", tries: 0, active: false},
+    snegrila: {password: "AmC$7aS9W?hu3Hfe", name: "Negrilă Ștefan", group: 161, driveFolder: "https://drive.google.com/drive/folders/1l9aBcv5fsvEYNR74eggSnEgTZcoRgo9W", tries: 0, active: false},
+    rspelea: {password: "WWn27*H+4VAP4EaS", name: "Pelea Radu-Ștefan", group: 161, driveFolder: "https://drive.google.com/drive/folders/1wK5wwgC01sxyOxWFlxfUxVm5igrCrIcv", tries: 0, active: false},
+    grusanescu: {password: "Y3bb6-GF-HsZM4N@", name: "Rusănescu Gabriel", group: 161, driveFolder: "https://drive.google.com/drive/folders/1b8XFNr5QLVet-cK6xri58ymd4VUgpoKa", tries: 0, active: false},
+    acruse: {password: "+%Y6%4@Tav-vmnm9", name: "Ruse Alexandru-Cristian", group: 161, driveFolder: "https://drive.google.com/drive/folders/1ANEvpC0qPxkOiT5nw0qONhY1IXZ3dWam", tries: 0, active: false},
+    ccsarofin: {password: "eu+HmEKQxqfT$4z2", name: "Sarofin Cristian-Constantin", group: 161, driveFolder: "https://drive.google.com/drive/folders/1qQmf7phJ-ANDPi3jOBFeXI5zDz_6ziKk", tries: 0, active: false},
+    igsirbu: {password: "Vc-zNGFf+DwX9Vws", name: "Sîrbu Iulia-Georgiana", group: 161, driveFolder: "https://drive.google.com/drive/folders/1kpAvTr5v9Bl-uArSE73ksLKlTu6Jx8Wx", tries: 0, active: false},
+    dastinga: {password: "FXYQ#MXvHvz?Q?eH", name: "Stîngă David-Andrei", group: 161, driveFolder: "https://drive.google.com/drive/folders/1eT3RcJ2d9lqfYqwkYijAXEVxQiC77mjI", tries: 0, active: false},
+    mfsturzoiu: {password: "26n5a2zREHAb+eu3", name: "Sturzoiu Maria-Filofteia", group: 161, driveFolder: "https://drive.google.com/drive/folders/1aPMjMtNxP6qbknleA7yeniP6IbvMgPlq", tries: 0, active: false},
+    desuciu: {password: "3PN2$%kjVRP*vrBv", name: "Suciu Dragos-Emanuel", group: 161, driveFolder: "https://drive.google.com/drive/folders/1pJSDSWDqeOSMIQ0sell0U23LXFcN2cDI", tries: 0, active: false},
+    cudroiu: {password: "cQJF?!BHvNSNEjqb", name: "Udroiu Cristian", group: 161, driveFolder: "https://drive.google.com/drive/folders/12x9DU11M26Hi2HiGrTNPIO7FzLGUryR5", tries: 0, active: false},
+    mvisanescu: {password: "ZVNxdg$cqf-Q?rHv", name: "Vișănescu Mihai", group: 161, driveFolder: "https://drive.google.com/drive/folders/1jkc_TJLaKcBSUxlje6qWHD4YVAEbEBC9", tries: 0, active: false},
+    aebulubasa: {password: "6a43RX&AH+ZwDM+$", name: "Bulubașa Alexia-Elena", group: 162, driveFolder: "https://drive.google.com/drive/folders/1cWc1l9YcpQcvnqDgn90xCQ_-GkHeG0pm", tries: 0, active: false},
+    crcirciumaru: {password: "+-Z-!TC8G6Jq7WeY", name: "Cîrciumaru Cristian-Radu", group: 162, driveFolder: "https://drive.google.com/drive/folders/111jfg9dpbSRhnmao6FeFkJ-e3WIo6tas", tries: 0, active: false},
+    frconstantinescu: {password: "BKkg4DzvNVzfn3Tf", name: "Constantinescu Florian-Robert", group: 162, driveFolder: "https://drive.google.com/drive/folders/1sCCH7_-P2JOTqPKhXxj4GizEMRt0o1ac", tries: 0, active: false},
+    sadominte: {password: "aw&w9+yhA9!dsg4@", name: "Dominte Ștefan-Alexandru", group: 162, driveFolder: "https://drive.google.com/drive/folders/1Xbo7eU9_MXHk-YMBcQz3g-n5hmiFX-IU", tries: 0, active: false},
+    dcfloroiu: {password: "2hn5u6!zhDsaE+y3", name: "Floroiu David-Cristian", group: 162, driveFolder: "https://drive.google.com/drive/folders/1KGHw-WNTindH-TOqDgdPTOSr5gF_0Uu0", tries: 0, active: false},
+    aagheorghe: {password: "XbEg&ZXy65%c!7CS", name: "Gheorghe Alexa-Andreea", group: 162, driveFolder: "https://drive.google.com/drive/folders/1S58Zxo91kOZ9bkYT-06JVVYZ4UBcNV5H", tries: 0, active: false},
+    ergheorghe: {password: "fu%RZ7t*nnXXTaW6", name: "Gheorghe Elena-Rebecca", group: 162, driveFolder: "https://drive.google.com/drive/folders/1vRTbwbfAADj5Ik8Nb1Toxbt1Y1OaD8Vb", tries: 0, active: false},
+    aagherghe: {password: "rA#SWxByA5$YR4Wb", name: "Gherghe Ana-Alexandra", group: 162, driveFolder: "https://drive.google.com/drive/folders/1KU1iArQwWSIDikXqRT9N2Z7gNXjjyK-n", tries: 0, active: false},
+    migirla: {password: "ArrvF8Y#6FQZM6Ax", name: "Gîrlă Monica-Ioana", group: 162, driveFolder: "https://drive.google.com/drive/folders/1_U4H69yTRuu8iUF-OzLyRSuVuLb40F74", tries: 0, active: false},
+    oivan: {password: "E%pm3*npvHPw4k$d", name: "Ivan Octavian", group: 162, driveFolder: "https://drive.google.com/drive/folders/1v9NtH5_2DL_-H18VvWOjdAW06sTeB83K", tries: 0, active: false},
+    tsmatei: {password: "Epv3H5KQpFjT%cj#", name: "Matei Thea-Sorana", group: 162, driveFolder: "https://drive.google.com/drive/folders/1vktFI_sN7NYLBWTuF8sZ2_Z-Snssvn5c", tries: 0, active: false},
+    aimihai: {password: "naTJYsR@#!@E!M8A", name: "Mihai Alessia-Ioana", group: 162, driveFolder: "https://drive.google.com/drive/folders/1yUhXjIv3tZFA-on7KEIy6oGl0OHTMz6t", tries: 0, active: false},
+    ramoldovan: {password: "4Ytkm#GuXkM9q*Mk", name: "Moldovan Raluca-Andreea", group: 162, driveFolder: "https://drive.google.com/drive/folders/1tCuXCZ9Ryfv4gQ8_ZZNR-8KlRoMXTo7a", tries: 0, active: false},
+    atnan: {password: "C8sEhpJP8mRNjp2C", name: "Nan Alexandra-Teodora", group: 162, driveFolder: "https://drive.google.com/drive/folders/1FXCWgmK-wc1v6zefTO5PjLDc1m-jFojr", tries: 0, active: false},
+    vfpadeanu: {password: "KB$sBEezY?c-AE9Q", name: "Pădeanu Vlad-Florin", group: 162, driveFolder: "https://drive.google.com/drive/folders/141T2oVrlDVGtpGy_CGPMwF_p9wEY6uBu", tries: 0, active: false},
+    ocristea: {password: "a#E#RRx!+ua#&$?4", name: "Ristea Octavian-Cristian", group: 162, driveFolder: "https://drive.google.com/drive/folders/1H4e3ymBunuQCI4NuG6efD6eECgSN6Rn_", tries: 0, active: false},
+    rarolea: {password: "PhWS5BQ3RcQcwGC?", name: "Rolea Robert-Andrei", group: 162, driveFolder: "https://drive.google.com/drive/folders/1UdrCn1TaevvI2X6U8OsTIDWTyyNrsheI", tries: 0, active: false},
+    masebacher: {password: "@Z*X6Ps4mCYwPvS?", name: "Sebacher Maria-Alexandra", group: 162, driveFolder: "https://drive.google.com/drive/folders/1L5ita-P7M_-ST3Nti_AzQIGPJcCSOGhf", tries: 0, active: false},
+    lcstanescu: {password: "gj@GFnh4bGK-5KGJ", name: "Stănescu Liviu-Cristian", group: 162, driveFolder: "https://drive.google.com/drive/folders/1J_gB8AAwj_F1YNiD11DcgVf980YJPMxS", tries: 0, active: false},
+    acargherie: {password: "cSyr8YbSqdK-a8!&", name: "Argherie Andrei-Codrut", group: 163, driveFolder: "https://drive.google.com/drive/folders/16qQHcRLXFIk-MOF-JrnU7MeFeDqi_jdT", tries: 0, active: false},
+    bcboboc: {password: "Kv8qY$HY6DMpA#Tp", name: "Boboc Bogdan-Costin", group: 163, driveFolder: "https://drive.google.com/drive/folders/1DVBDyzbUCS2ulYuKAbqA4lmddJ7dLwgt", tries: 0, active: false},
+    rscimpoesu: {password: "b9eWzgXGchRPw7!#", name: "Cimpoeșu Rareș-Ștefan", group: 163, driveFolder: "https://drive.google.com/drive/folders/1H4GbUQmFXVjvXWwKbPlkz2rVGV9ue9E6", tries: 0, active: false},
+    dgdorobantu: {password: "Qtq6Qds$G9VYYTjH", name: "Dorobanțu David-Gabriel", group: 163, driveFolder: "https://drive.google.com/drive/folders/1xWdyl5CIqCsJsqcwe5NQ96_SE_uj-MGB", tries: 0, active: false},
+    agduta: {password: "wcuqpCMFR4rpn99x", name: "Duță Andrei-George", group: 163, driveFolder: "https://drive.google.com/drive/folders/1j99RsGgb6DyMBcCwbZOHdxXDFRDsxIGp", tries: 0, active: false},
+    mmiancu: {password: "G5ZJ5!R4JG*DQmvx", name: "Iancu Mihnea-Matei", group: 163, driveFolder: "https://drive.google.com/drive/folders/1ndTGEjibclhGa9ji0QxQnLY42dgy4gnM", tries: 0, active: false},
+    dmmatache: {password: "KHV#J8uF#mSvKQJW", name: "Matache David-Mihai", group: 163, driveFolder: "https://drive.google.com/drive/folders/1FpSBw6n0--lbjuMYZLb-6wyTXlCct8gD", tries: 0, active: false},
+    vsmerticariu: {password: "af57bVT6UByGrP8?", name: "Merticariu Vlad-Ștefan", group: 163, driveFolder: "https://drive.google.com/drive/folders/1lmgsMoINHdDpD5_rmC5MSOfQIUTPISb-", tries: 0, active: false},
+    kamiura: {password: "aGnrANrXUS&Da&vW", name: "Miura Kevin-Adrian", group: 163, driveFolder: "https://drive.google.com/drive/folders/1H3hJCoh0mt3vrr93c9xIpXBZmj9p9eyU", tries: 0, active: false},
+    bmnan: {password: "M4nGgR6mxe%DwEP3", name: "Nan Bianca-Maria", group: 163, driveFolder: "https://drive.google.com/drive/folders/1vR5s-wU_rgN01zhzfb-4lYmxFq0epWjz", tries: 0, active: false},
+    dtpetrovici: {password: "m*4?gV#r+!#e9GU4", name: "Petrovici Dalia-Teodora", group: 163, driveFolder: "https://drive.google.com/drive/folders/1bXw6U_J5lbZJj8Or23dHcZl73sAvjmkx", tries: 0, active: false},
+    iradu: {password: "&+sth!nz7aGuM%Xy", name: "Radu Ioana", group: 163, driveFolder: "https://drive.google.com/drive/folders/1NLRPx04jMcK2ItzqvT6TnXbiVwy0N4ie", tries: 0, active: false},
+    cdrapiteanu: {password: "CK%QvpMb!bZH*?ff", name: "Răpițeanu Carol-David", group: 163, driveFolder: "https://drive.google.com/drive/folders/1lXR8sIkLPwGM4tuXKhIflSBWFaoRH1Uh", tries: 0, active: false},
+    dsabo: {password: "Wd?4QzSY5a+q93+2", name: "Sabo David", group: 163, driveFolder: "https://drive.google.com/drive/folders/1bPHDiw-UNFyjYoBN07-9q3DKdCBXKOwm", tries: 0, active: false},
+    gastefan: {password: "WS@zB$Q*!#CPc#EC", name: "Ștefan George-Alexandru", group: 163, driveFolder: "https://drive.google.com/drive/folders/1SCt2M42WE16UuWa4PGZdgz4mEj7jNdfj", tries: 0, active: false},
+    dftatomir: {password: "P8?8%sybWXkJc?Ju", name: "Tatomir Darius-Flavius", group: 163, driveFolder: "https://drive.google.com/drive/folders/1e7GFwGKlQtODlKfiKkfLQCpY6T5gCpIu", tries: 0, active: false},
+    matimbus: {password: "KYy+bxRnVUTsKmDW", name: "Timbuș Maria-Alexandra", group: 163, driveFolder: "https://drive.google.com/drive/folders/13A5UKCpsbakp-Uy2fN9X08wB9K6uO_uz", tries: 0, active: false},
+    mftrandafir: {password: "Uzzyr3@wPsphA7nn", name: "Trandafir Mariana-Florentina", group: 163, driveFolder: "https://drive.google.com/drive/folders/1HZMRLk4Wrl4U2-EoKKLiXm-McmI5rCZ-", tries: 0, active: false},
+    deungureanu: {password: "8f9WSygx%6sZbm9T", name: "Ungureanu David-Emanuel", group: 163, driveFolder: "https://drive.google.com/drive/folders/1hKAKfKZKDDikNnWNpjAVhc10g10ZruzC", tries: 0, active: false},
+    aguillermo: {password: "+t3$K5DC+sCUtU$+", name: "Guillermo Alonso", group: 163, driveFolder: "https://drive.google.com/drive/folders/1VpzPjDAKtEz1VQ-wOmTDovIzAccujNOT", tries: 0, active: false},
+    cbaciu: {password: "&y4H7nKFmcVce5Fv", name: "Baciu Cristian", group: 164, driveFolder: "https://drive.google.com/drive/folders/1dfCS-iNjaer_TQLEpQKt7Ad6GeX9LXUB", tries: 0, active: false},
+    ncbodescu: {password: "#@Z#PBqfrhaFaR3u", name: "Bodescu Nicoleta-Cătălina", group: 164, driveFolder: "https://drive.google.com/drive/folders/1zxgdv0Ebr3BThtUudmlfObsID5S4fzMZ", tries: 0, active: false},
+    vcciunel: {password: "gUKkuv&kDTv&gY#5", name: "Ciunel Vlad Cristian", group: 164, driveFolder: "https://drive.google.com/drive/folders/1Hxljf6oXwWbeLPH8NqOBYBHaVpHiQuSa", tries: 0, active: false},
+    vciuta: {password: "J$n#jZz@M73VP@SB", name: "Ciută Vasile", group: 164, driveFolder: "https://drive.google.com/drive/folders/1QdbQXPBnQV3xEHn_BtmjNcDvfhl77Hsc", tries: 0, active: false},
+    dcraciun: {password: "r7wg?f#9r*KCPEXD", name: "Crăciun Daniel", group: 164, driveFolder: "https://drive.google.com/drive/folders/1QpIZRiUVzpWiqvD86lEq7kcoBO7ebwlk", tries: 0, active: false},
+    camicu: {password: "h+Mqenyz&z%zXqHP", name: "Micu Cosmin-Andrei", group: 164, driveFolder: "https://drive.google.com/drive/folders/1SvBSQr0xS4uf8KZoHzq54p03bkQoPAj9", tries: 0, active: false},
+    tcmurariu: {password: "R!2wE&zs!b+w%Ppf", name: "Murariu Tudor-Călin", group: 164, driveFolder: "https://drive.google.com/drive/folders/19V9NmCeY9n5SMvK2BnMVbkdEKviBFWC1", tries: 0, active: false},
+    raneacsu: {password: "TRp#AaqsnneNW!6r", name: "Neacșu Rareș Andrei", group: 164, driveFolder: "https://drive.google.com/drive/folders/1K5CI3CRw5CBazC6maoxA4QBzJEEMX-q_", tries: 0, active: false},
+    mnecula: {password: "rr4%34U2+2QmJqms", name: "Necula Matei", group: 164, driveFolder: "https://drive.google.com/drive/folders/1tMj4NHQPwdFm-mavZgKdaqyUfwQ4MTh1", tries: 0, active: false},
+    lanedelcu: {password: "mwWenn4RPhCZH*4x", name: "Nedelcu Liviu-Adrian", group: 164, driveFolder: "https://drive.google.com/drive/folders/1GJJ7mHKQkz3nsU7OzJEzJgYkzgINNvsX", tries: 0, active: false},
+    acoroian: {password: "8kG+Yb53QrtA+FQt", name: "Oroian Andrei-Cristian", group: 164, driveFolder: "https://drive.google.com/drive/folders/1THSAMGEjjU6xRr7_gp-ZrlLIYo8wd0jW", tries: 0, active: false},
+    raplutu: {password: "%BwMsEr5C$*Wxch@", name: "Pluțu Robert-Adrian", group: 164, driveFolder: "https://drive.google.com/drive/folders/1g-Dcq6Q4F0ZtjU3A8VoDJZXOW6V737xD", tries: 0, active: false},
+    parada: {password: "@?hgG58pr*fHA%xw", name: "Rada Patrick-Andrei", group: 164, driveFolder: "https://drive.google.com/drive/folders/1u7B0DsQ1Aea60Q362hCFwsFiipq5EAWw", tries: 0, active: false},
+    aasalehi: {password: "UNm#3TFJ8e*@uf#5", name: "Salehi Arian-Andrei", group: 164, driveFolder: "https://drive.google.com/drive/folders/1VqHnTLK9s_uONw7_Zs3M1lxN8rpNJe0M", tries: 0, active: false},
+    eosandupopa: {password: "U6DjK%6zruZ7anEw", name: "Sandu-Popa Eduard-Octavian", group: 164, driveFolder: "https://drive.google.com/drive/folders/1OVjoQ0ql08zr0PSqO8ouUVP23iUynKKE", tries: 0, active: false},
+    cdstanica: {password: "+%Y@a+H3&Qdvf*d5", name: "Stănică Constantin-Dragoș", group: 164, driveFolder: "https://drive.google.com/drive/folders/10142BX8D74MskPPaG80PmeYrj8YUlfcp", tries: 0, active: false},
+    sstoica: {password: "cvp-f4wAz5?G36xU", name: "Stoica Sara", group: 164, driveFolder: "https://drive.google.com/drive/folders/1vXAsV9BmxBs909nIO0v9W80vRSfZ1jHN", tries: 0, active: false},
+    ttita: {password: "zUSPRtg%Zan?N9#S", name: "Tița Teodor", group: 164, driveFolder: "https://drive.google.com/drive/folders/1teC7cpqkpN31mphmDPw18OZOfk7XjCJR", tries: 0, active: false},
+    msvisan: {password: "zMgC#TjrjxUY@x3g", name: "Vișan Miruna-Ștefania", group: 164, driveFolder: "https://drive.google.com/drive/folders/15itHuOVTjDxF6F7PeUOFKVlkwq6VDllL", tries: 0, active: false}
+};
+
+const GROUPS = {
+    161: {
+        theory: [
+            "https://drive.google.com/file/d/1O-w46rfGk2MA4rigIn9T9NrIJCop8kOg/preview",
+            "https://drive.google.com/file/d/1dKuLoz5bONcFo7eacA48x9Mxc7i8-V7H/preview",
+            "https://drive.google.com/file/d/1OsrSIPSg6O3QnKBtlHl48B8yW2PjTAg1/preview",
+            "https://drive.google.com/file/d/1IwIaBSGl5fQI7F381ZdgwMRqjQV7JwNF/preview",
+            "https://drive.google.com/file/d/1hsv5lR2y6qD3JAN4pqNTQZMrw_HiB3gk/preview",
+            "https://drive.google.com/file/d/1wCPpxOdYm7EW8_dKU73p1JxkIvsvwcO7/preview",
+            "https://drive.google.com/file/d/1MkdcJI6i8Sv5Yv6YYBpe-ytjiai_FcUl/preview"
+        ],
+        ex: [
+            "https://drive.google.com/file/d/1OLmRUwqV4vVal0q0GnwLTfn3QF38JgvD/preview",
+            "https://drive.google.com/file/d/1jnUnCe_uHXO5_yz589PagpZ8sLgiYrF4/preview",
+            "https://drive.google.com/file/d/1hQJYf8Aqp7AkUwDMKliqX3Q8ju1k9N4l/preview",
+            "https://drive.google.com/file/d/1a8ygF-Py7XKBdKQCAu0oN4uy1WyHNHWJ/preview",
+            "https://drive.google.com/file/d/1mrOlzI_8znWhNCb9gG4iz40D_5pnAfyW/preview",
+            "https://drive.google.com/file/d/1kk9a1UByXKhYBCVtIyIPMg2sMm_87A5m/preview"
+        ]
+    },
+    162: {
+        theory: [
+            "https://drive.google.com/file/d/1O-w46rfGk2MA4rigIn9T9NrIJCop8kOg/preview",
+            "https://drive.google.com/file/d/1dKuLoz5bONcFo7eacA48x9Mxc7i8-V7H/preview",
+            "https://drive.google.com/file/d/1OsrSIPSg6O3QnKBtlHl48B8yW2PjTAg1/preview",
+            "https://drive.google.com/file/d/1IwIaBSGl5fQI7F381ZdgwMRqjQV7JwNF/preview",
+            "https://drive.google.com/file/d/1hsv5lR2y6qD3JAN4pqNTQZMrw_HiB3gk/preview",
+            "https://drive.google.com/file/d/1wCPpxOdYm7EW8_dKU73p1JxkIvsvwcO7/preview",
+            "https://drive.google.com/file/d/1MkdcJI6i8Sv5Yv6YYBpe-ytjiai_FcUl/preview"
+        ],
+        ex: [
+            "https://drive.google.com/file/d/1OLmRUwqV4vVal0q0GnwLTfn3QF38JgvD/preview",
+            "https://drive.google.com/file/d/1jnUnCe_uHXO5_yz589PagpZ8sLgiYrF4/preview",
+            "https://drive.google.com/file/d/1hQJYf8Aqp7AkUwDMKliqX3Q8ju1k9N4l/preview",
+            "https://drive.google.com/file/d/1a8ygF-Py7XKBdKQCAu0oN4uy1WyHNHWJ/preview",
+            "https://drive.google.com/file/d/1mrOlzI_8znWhNCb9gG4iz40D_5pnAfyW/preview",
+            "https://drive.google.com/file/d/1kk9a1UByXKhYBCVtIyIPMg2sMm_87A5m/preview"
+        ]
+    },
+    163: {
+        theory: [
+            "https://drive.google.com/file/d/1O-w46rfGk2MA4rigIn9T9NrIJCop8kOg/preview",
+            "https://drive.google.com/file/d/1dKuLoz5bONcFo7eacA48x9Mxc7i8-V7H/preview",
+            "https://drive.google.com/file/d/1OsrSIPSg6O3QnKBtlHl48B8yW2PjTAg1/preview",
+            "https://drive.google.com/file/d/1IwIaBSGl5fQI7F381ZdgwMRqjQV7JwNF/preview",
+            "https://drive.google.com/file/d/1hsv5lR2y6qD3JAN4pqNTQZMrw_HiB3gk/preview",
+            "https://drive.google.com/file/d/1wCPpxOdYm7EW8_dKU73p1JxkIvsvwcO7/preview",
+            "https://drive.google.com/file/d/1MkdcJI6i8Sv5Yv6YYBpe-ytjiai_FcUl/preview"
+        ],
+        ex: [
+            "https://drive.google.com/file/d/1OLmRUwqV4vVal0q0GnwLTfn3QF38JgvD/preview",
+            "https://drive.google.com/file/d/1jnUnCe_uHXO5_yz589PagpZ8sLgiYrF4/preview",
+            "https://drive.google.com/file/d/1hQJYf8Aqp7AkUwDMKliqX3Q8ju1k9N4l/preview",
+            "https://drive.google.com/file/d/1a8ygF-Py7XKBdKQCAu0oN4uy1WyHNHWJ/preview",
+            "https://drive.google.com/file/d/1mrOlzI_8znWhNCb9gG4iz40D_5pnAfyW/preview",
+            "https://drive.google.com/file/d/1kk9a1UByXKhYBCVtIyIPMg2sMm_87A5m/preview"
+        ]
+    },
+    164: {
+        theory: [
+            "https://drive.google.com/file/d/1O-w46rfGk2MA4rigIn9T9NrIJCop8kOg/preview",
+            "https://drive.google.com/file/d/1dKuLoz5bONcFo7eacA48x9Mxc7i8-V7H/preview",
+            "https://drive.google.com/file/d/1OsrSIPSg6O3QnKBtlHl48B8yW2PjTAg1/preview",
+            "https://drive.google.com/file/d/1IwIaBSGl5fQI7F381ZdgwMRqjQV7JwNF/preview",
+            "https://drive.google.com/file/d/1hsv5lR2y6qD3JAN4pqNTQZMrw_HiB3gk/preview",
+            "https://drive.google.com/file/d/1wCPpxOdYm7EW8_dKU73p1JxkIvsvwcO7/preview",
+            "https://drive.google.com/file/d/1MkdcJI6i8Sv5Yv6YYBpe-ytjiai_FcUl/preview"
+        ],
+        ex: [
+            "https://drive.google.com/file/d/1OLmRUwqV4vVal0q0GnwLTfn3QF38JgvD/preview",
+            "https://drive.google.com/file/d/1jnUnCe_uHXO5_yz589PagpZ8sLgiYrF4/preview",
+            "https://drive.google.com/file/d/1hQJYf8Aqp7AkUwDMKliqX3Q8ju1k9N4l/preview",
+            "https://drive.google.com/file/d/1a8ygF-Py7XKBdKQCAu0oN4uy1WyHNHWJ/preview",
+            "https://drive.google.com/file/d/1mrOlzI_8znWhNCb9gG4iz40D_5pnAfyW/preview",
+            "https://drive.google.com/file/d/1kk9a1UByXKhYBCVtIyIPMg2sMm_87A5m/preview"
+        ]
+    }
+};
+
+let currentUser=null;
+let timers={theory:null,ex:null};
+let remaining={theory:0,ex:0};
+let finishedSections={theory:false,ex:false};
+let startedAny=false;
+let pdfListVisible=false;
+
+const THEORY_DURATION = 10 * 60;
+const EX_DURATION = 50 * 60;
+
+const $=id=>document.getElementById(id);
+function usedAttemptsKey(username){return `usedAttempts_${username}`;}
+function getUsedAttempts(username){return Number(localStorage.getItem(usedAttemptsKey(username))||0);}
+function setUsedAttempts(username,n){localStorage.setItem(usedAttemptsKey(username),String(n));}
+function saveState(){if(!currentUser)return; localStorage.setItem(`examState_${currentUser.username}`,JSON.stringify({remaining,finishedSections,startedAny}));}
+function loadState(){if(!currentUser)return; const state=JSON.parse(localStorage.getItem(`examState_${currentUser.username}`)||'{}'); if(state){remaining=state.remaining||{theory:0,ex:0};finishedSections=state.finishedSections||{theory:false,ex:false};startedAny=state.startedAny||false;}}
+function clearState(){if(currentUser)localStorage.removeItem(`examState_${currentUser.username}`);}
+function formatTime(sec){const s=Math.max(0,Math.floor(sec));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+
+function login(){
+const u=$('username').value.trim(),p=$('password').value,info=USERS[u],err=$('loginError');err.textContent='';
+if(!info||info.password!==p){err.textContent='Invalid username or password';return;}
+if(!info.active){err.textContent='Account is inactive. Please contact administrator.';return;}
+if(u!=='admin' && info.tries!==null && getUsedAttempts(u)>=info.tries){err.textContent='No attempts left';return;}
+currentUser={username:u,name:info.name,group:info.group,driveFolder:info.driveFolder,tries:info.tries,active:info.active};
+$('login').classList.add('hidden');$('exam').classList.remove('hidden');
+$('welcome').textContent=`Welcome ${currentUser.name} ${currentUser.group?"(Group "+currentUser.group+")":""}`;
+updateAttemptsUI();
+loadState();
+resetExamUI();
+$('adminPDFSection').style.display=(u==='admin')?'block':'none';
+}
+
+function logout(){clearInterval(timers.theory);clearInterval(timers.ex);currentUser=null;$('exam').classList.add('hidden');$('login').classList.remove('hidden');$('username').value='';$('password').value='';$('loginError').textContent='';$('attemptInfo').textContent='';$('adminPDFList').classList.add('hidden');pdfListVisible=false;}
+
+function updateAttemptsUI(){if(!currentUser)return;let used=getUsedAttempts(currentUser.username);let max=currentUser.tries===null?"∞":currentUser.tries;$('attemptInfo').textContent=`Attempts used: ${used} / ${max}`;}
+
+function requestAccess(){window.location.href='request-accesss.html';}
+
+function resetExamUI(){
+['theory','ex'].forEach(s=>{
+$(`start${s==='theory'?'Theory':'Ex'}`).classList.remove('hidden');
+$(`${s}Timer`).style.display=remaining[s]>0?'inline':'none';
+$(`${s}Timer`).textContent=formatTime(remaining[s]);
+if(remaining[s]>0){const storedPdf=localStorage.getItem(`pdf_${currentUser.username}_${s}`);if(storedPdf){$(`${s}Pdf`).src=storedPdf;$(`${s}PdfContainer`).classList.remove('hidden');}}
+$(`${s}Section`).classList.remove('fade-out');
+});
+$('finishExamContainer').style.display=startedAny?'block':'none';
+$('uploadCard').classList.add('hidden');
+if(currentUser.tries !== null && getUsedAttempts(currentUser.username)>=currentUser.tries){
+['startTheory','startEx'].forEach(b=>$(b).style.display='none');
+$('finishExamContainer').style.display='none';
+$('hint').textContent='You have used all your attempts.';
+}
+}
+
+function startTimer(section){
+if(!currentUser)return alert('Please log in first.');
+let pdfs=[];
+let duration = section === 'theory' ? THEORY_DURATION : EX_DURATION;
+
+if(currentUser.username==='admin'){
+pdfs=[];
+for(let gid in GROUPS){pdfs=pdfs.concat(GROUPS[gid][section]);}
+duration=9999*60;
+}else{
+const gid=currentUser.group;
+pdfs=GROUPS[gid][section];
+}
+
+remaining[section]=remaining[section]>0?remaining[section]:duration;
+$(`start${section==='theory'?'Theory':'Ex'}`).classList.add('hidden');
+$(`${section}Timer`).style.display = currentUser.username==='admin'?'none':'inline';
+
+if(pdfs.length>0){
+const pdf=pdfs[Math.floor(Math.random()*pdfs.length)];
+$(`${section}Pdf`).src=pdf;
+$(`${section}PdfContainer`).classList.remove('hidden');
+if(currentUser.username!=='admin') localStorage.setItem(`pdf_${currentUser.username}_${section}`,pdf);
+}
+
+$(`${section}Pdf`).onerror = function() {
+    alert("PDF-ul nu poate fi încărcat. Vă rugăm să contactați administratorul.");
+    this.src = "about:blank";
+};
+
+startedAny=true;
+$('finishExamContainer').style.display='block';
+
+if(currentUser.username!=='admin'){
+timers[section]=setInterval(()=>{
+remaining[section]--;
+$(`${section}Timer`).textContent=formatTime(remaining[section]);
+saveState();
+if(remaining[section]<=0){
+    clearInterval(timers[section]);
+    endSection(section);
+}
+},1000);
+}
+}
+
+function endSection(section){finishedSections[section]=true;$(`${section}Section`).classList.add('fade-out');}
+
+function finishExam(){
+if(!currentUser)return;
+if(currentUser.tries !== null){
+let used=getUsedAttempts(currentUser.username)||0;
+used++;
+setUsedAttempts(currentUser.username,used);
+updateAttemptsUI();
+}
+if(currentUser.username!=='admin'){
+$('uploadName').textContent=`${currentUser.name} - Click below to upload your solutions`;
+$('openFolderBtn').onclick=()=>{if(currentUser.driveFolder) window.open(currentUser.driveFolder,'_blank');};
+$('uploadCard').classList.remove('hidden');
+if(currentUser.tries !== null && getUsedAttempts(currentUser.username)>=currentUser.tries){
+$('retakeBtn').style.display='none';
+} else {
+$('retakeBtn').style.display='inline-block';
+}}
+$('finishExamContainer').style.display='none';
+['theory','ex'].forEach(s=>{clearInterval(timers[s]);$(`${s}PdfContainer`).classList.add('hidden');$(`${s}Pdf`).src='';$(`${s}Timer`).style.display='none';});
+clearState();
+}
+
+function resetPortal(){
+if(currentUser.tries !== null && getUsedAttempts(currentUser.username)>=currentUser.tries){
+alert("You have no attempts left.");
+return;
+}
+remaining={theory:0,ex:0};
+finishedSections={theory:false,ex:false};
+startedAny=false;
+clearState();
+resetExamUI();
+$('uploadCard').classList.add('hidden');
+}
+
+function toggleAdminPDFList(){
+const container=$('adminPDFList');
+pdfListVisible=!pdfListVisible;
+container.classList.toggle('hidden',!pdfListVisible);
+$('togglePDFListBtn').textContent=pdfListVisible?'Close PDF List':'See PDF List';
+if(pdfListVisible){
+container.innerHTML='';
+for(let gid in GROUPS){
+const divGroup=document.createElement('div');
+divGroup.className='mb-3 font-semibold';
+divGroup.textContent=`Group ${gid}`;
+container.appendChild(divGroup);
+['theory','ex'].forEach(type=>{
+const title=document.createElement('div');title.textContent=`${type.toUpperCase()}:`;title.className='ml-2 font-medium';container.appendChild(title);
+GROUPS[gid][type].forEach(url=>{
+const b=document.createElement('button');
+b.textContent='View PDF';
+b.className='ml-4 mt-1 px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 pdf-item';
+b.onclick=()=>window.open(url,'_blank');
+container.appendChild(b);
+});
+});
+}
+}
+}
+</script>
+</body>
+</html>
